@@ -1,0 +1,504 @@
+
+        <!DOCTYPE html>
+        <head>
+            
+        
+            <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+            <script src="js/leaflet_1.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+            <script src="js/d3.v4.min.js" charset="utf-8"></script>
+            <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+            <script src="js/lodash.js"></script>
+
+            <link rel="stylesheet" href="css/leaflet_1.css" />
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
+            <link rel="stylesheet" href="https://raw.githubusercontent.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css" />
+        
+        
+        
+            
+            <style>
+
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                }
+
+            #map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+ #map {
+                position : relative;
+                width : 100.0%;
+                height: 100.0%;
+                left: 0.0%;
+                top: 0.0%;
+                }
+
+.background {
+  fill: #eee;
+  pointer-events: all;
+}
+
+.map-layer {
+  fill: #fff;
+  stroke: #aaa;
+}
+
+            </style>
+        
+        
+        
+        </head>
+        <body>
+            
+        <div class="form-group">
+  <div class="container">
+    <div class="row">
+
+          <div class="col-md-3">
+
+            <label for="sel1">Sélectionner une ville :</label>
+            <select class="form-control" id="city_dep">
+            </select></div>
+
+              </div></div>
+
+
+            </div>
+            <svg id="minimap"></svg>
+            
+            <div id="map" ></div>
+        
+        
+        
+        </body>
+        <script>
+            
+var data,
+    map;
+
+var cities_files = {'ABLON': 'ABLON-xls-geo.csv',
+ 'ALFORTVILLE': 'ALFORTVILLE-xls-geo.csv',
+ 'ARCUEIL': 'ARCUEIL-xls-geo.csv',
+ 'BONNEUIL': 'BONNEUIL-ok-geo.csv',
+ 'BRY SUR MARNE': 'BRY SUR MARNE-ok-geo.csv',
+ 'Boissy': 'Boissy-xml-geo.csv',
+ 'CHAMPIGNY': 'CHAMPIGNY-ok-geo.csv',
+ 'CHARENTON': 'CHARENTON-ok-geo.csv',
+ 'CHEVILLY LARUE': 'CHEVILLY LARUE-ok-geo.csv',
+ 'CHOISY': 'CHOISY-ok-geo.csv',
+ 'Cachan': 'Cachan-xml-geo.csv',
+ 'Chennevieres': 'Chennevieres-xml-geo.csv',
+ 'Creteil': 'Creteil-xml-geo.csv',
+ 'FONTENAY': 'FONTENAY-ok-geo.csv',
+ 'FRESNES': 'FRESNES-ok-geo.csv',
+ 'GENTILLY': 'GENTILLY-ok-geo.csv',
+ 'IVRY': 'IVRY-ok-geo.csv',
+ 'Joinville': 'Joinville-xml-geo.csv',
+ 'KREMLIN BICETRE': 'KREMLIN BICETRE-ok-geo.csv',
+ "L'HAY LES ROSES": "L'HAY LES ROSES-ok-geo.csv",
+ 'LE PERREUX': 'LE PERREUX-ok-geo.csv',
+ 'LIMEIL': 'LIMEIL-xls-geo.csv',
+ 'MAISONS-ALFORT': 'MAISONS-ALFORT-ok-geo.csv',
+ 'MANDRES': 'MANDRES-xls-geo.csv',
+ 'Marolles': 'Marolles-xml-geo.csv',
+ 'NOGENT': 'NOGENT-xls-geo.csv',
+ 'NOISEAU': 'NOISEAU-ok-geo.csv',
+ 'ORMESSON': 'ORMESSON-xls-geo.csv',
+ 'Orly': 'Orly-xml-geo.csv',
+ 'PERIGNY': 'PERIGNY-xls-geo.csv',
+ 'Plessis-trevise': 'Plessis-trevise-xml-geo.csv',
+ 'QUEUE EN BRIE (LA)': 'QUEUE EN BRIE (LA)-xls-geo.csv',
+ 'RUNGIS': 'RUNGIS-ok-geo.csv',
+ 'SAINT MANDE': 'SAINT MANDE-ok-geo.csv',
+ 'SANTENY': 'SANTENY-xls-geo.csv',
+ 'ST MAUR DES FOSSES': 'ST MAUR DES FOSSES-xls-geo.csv',
+ 'ST MAURICE': 'ST MAURICE-xls-geo.csv',
+ 'SUCY': 'SUCY-xls-geo.csv',
+ 'THIAIS': 'THIAIS-xls-geo.csv',
+ 'VALENTON': 'VALENTON-ok-geo.csv',
+ 'VILLEJUIF': 'VILLEJUIF-ok-geo.csv',
+ 'VILLENEUVE LE ROI': 'VILLENEUVE LE ROI-ok-geo.csv',
+ 'VILLENEUVE ST GEORGES': 'VILLENEUVE ST GEORGES-ok-geo.csv',
+ 'VILLIERS': 'VILLIERS-xls-geo.csv',
+ 'VINCENNES': 'VINCENNES-ok-geo.csv',
+ 'VITRY': 'VITRY-ok-geo.csv',
+ 'Villecresnes': 'Villecresnes-xml-geo.csv'};
+
+
+var cities_files_2 = 
+{"Ablon-sur-Seine":"ABLON-xls-geo.csv","Alfortville":"ALFORTVILLE-xls-geo.csv","Arcueil":"ARCUEIL-xls-geo.csv","Boissy-Saint-L\u00e9ger":"Boissy-xml-geo.csv","Bonneuil-sur-Marne":"BONNEUIL-ok-geo.csv","Bry-sur-Marne":"BRY SUR MARNE-ok-geo.csv","Cachan":"Cachan-xml-geo.csv","Champigny-sur-Marne":"CHAMPIGNY-ok-geo.csv","Charenton-le-Pont":"CHARENTON-ok-geo.csv","Chennevi\u00e8res-sur-Marne":"Chennevieres-xml-geo.csv","Chevilly-Larue":"CHEVILLY LARUE-ok-geo.csv","Choisy-le-Roi":"CHOISY-ok-geo.csv","Cr\u00e9teil":"Creteil-xml-geo.csv","Fontenay-sous-Bois":"FONTENAY-ok-geo.csv","Fresnes":"FRESNES-ok-geo.csv","Gentilly":"GENTILLY-ok-geo.csv","Ivry-sur-Seine":"IVRY-ok-geo.csv","Joinville-le-Pont":"Joinville-xml-geo.csv","L'Ha\u00ff-les-Roses":"L'HAY LES ROSES-ok-geo.csv","La Queue-en-Brie":"QUEUE EN BRIE (LA)-xls-geo.csv","Le Kremlin-Bic\u00eatre":"KREMLIN BICETRE-ok-geo.csv","Le Perreux-sur-Marne":"LE PERREUX-ok-geo.csv","Le Plessis-Tr\u00e9vise":"Plessis-trevise-xml-geo.csv","Limeil-Br\u00e9vannes":"LIMEIL-xls-geo.csv","Maisons-Alfort":"MAISONS-ALFORT-ok-geo.csv","Mandres-les-Roses":"MANDRES-xls-geo.csv","Marolles-en-Brie":"Marolles-xml-geo.csv","Nogent-sur-Marne":"NOGENT-xls-geo.csv","Noiseau":"NOISEAU-ok-geo.csv","Orly":"Orly-xml-geo.csv","Ormesson-sur-Marne":"ORMESSON-xls-geo.csv","P\u00e9rigny":"PERIGNY-xls-geo.csv","Rungis":"RUNGIS-ok-geo.csv","Saint-Mand\u00e9":"SAINT MANDE-ok-geo.csv","Saint-Maur-des-Foss\u00e9s":"ST MAUR DES FOSSES-xls-geo.csv","Saint-Maurice":"ST MAURICE-xls-geo.csv","Santeny":"SANTENY-xls-geo.csv","Sucy-en-Brie":"SUCY-xls-geo.csv","Thiais":"THIAIS-xls-geo.csv","Valenton":"VALENTON-ok-geo.csv","Villecresnes":"Villecresnes-xml-geo.csv","Villejuif":"VILLEJUIF-ok-geo.csv","Villeneuve-le-Roi":"VILLENEUVE LE ROI-ok-geo.csv","Villeneuve-Saint-Georges":"VILLENEUVE ST GEORGES-ok-geo.csv","Villiers-sur-Marne":"VILLIERS-xls-geo.csv","Vincennes":"VINCENNES-ok-geo.csv","Vitry-sur-Seine":"VITRY-ok-geo.csv"};
+
+var color_dict = {'1': '#1f77b4',
+ '10': '#c5b0d5',
+ '11': '#8c564b',
+ '12': '#c49c94',
+ '13': '#e377c2',
+ '14': '#f7b6d2',
+ '15': '#7f7f7f',
+ '16': '#c7c7c7',
+ '17': '#bcbd22',
+ '18': '#dbdb8d',
+ '19': '#17becf',
+ '2': '#aec7e8',
+ '20': '#9edae5',
+ '21': '#1f77b4',
+ '22': '#aec7e8',
+ '23': '#ff7f0e',
+ '24': '#ffbb78',
+ '25': '#2ca02c',
+ '26': '#98df8a',
+ '27': '#d62728',
+ '28': '#ff9896',
+ '29': '#9467bd',
+ '3': '#ff7f0e',
+ '30': '#c5b0d5',
+ '31': '#8c564b',
+ '32': '#c49c94',
+ '33': '#e377c2',
+ '34': '#f7b6d2',
+ '35': '#7f7f7f',
+ '36': '#c7c7c7',
+ '37': '#bcbd22',
+ '38': '#dbdb8d',
+ '39': '#17becf',
+ '4': '#ffbb78',
+ '40': '#9edae5',
+ '41': '#1f77b4',
+ '42': '#aec7e8',
+ '43': '#ff7f0e',
+ '44': '#ffbb78',
+ '45': '#2ca02c',
+ '46': '#98df8a',
+ '47': '#d62728',
+ '48': '#ff9896',
+ '49': '#9467bd',
+ '5': '#2ca02c',
+ '50': '#c5b0d5',
+ '51': '#8c564b',
+ '52': '#c49c94',
+ '53': '#e377c2',
+ '54': '#f7b6d2',
+ '55': '#7f7f7f',
+ '56': '#c7c7c7',
+ '57': '#bcbd22',
+ '58': '#dbdb8d',
+ '59': '#17becf',
+ '6': '#98df8a',
+ '60': '#9edae5',
+ '7': '#d62728',
+ '8': '#ff9896',
+ '9': '#9467bd'};
+
+
+ // var color_tone = d3.scaleSequential(d3.interpolateSpectral);
+
+ var color_tone = d3.scaleOrdinal(d3.schemePaired);
+
+ var all_cities = d3.keys(cities_files);
+
+var markerGroup;
+
+ console.log(all_cities);
+
+ var all_cities_entries = d3.entries(cities_files);
+
+ console.log(all_cities_entries);
+
+var selectCity = d3.select('#city_dep');
+
+selectCity.selectAll('option')
+.data(all_cities_entries)
+.enter()
+.append('option')
+.attr('value', function(d){ return d.value})
+.text(function(d){ return d.key});
+
+selectCity
+.insert('option', ":first-child")
+.attr('value', 0)
+.text('Sélectionner une ville');
+
+
+/// Set up the minimap
+
+var width_minimap = 400,
+    height_minimap = 300,
+    centered;
+
+
+var color_cities = 'rgb(183, 217, 217)';
+
+var projection = d3.geoMercator()
+  .scale(40000)
+  .center([ 2.49, 48.78])
+  .translate([width_minimap / 2, height_minimap / 2]);
+
+var path = d3.geoPath()
+  .projection(projection);
+
+
+// Set svg width & height
+var svg_minimap = d3.select('svg#minimap')
+  .attr('width', width_minimap)
+  .attr('height', height_minimap);
+
+// Add background
+svg_minimap.append('rect')
+  .attr('class', 'background')
+  .attr('width', width_minimap)
+  .attr('height', height_minimap);
+
+var g_minimap = svg_minimap.append('g');
+
+var effectLayer = g_minimap.append('g')
+  .classed('effect-layer', true);
+
+var mapLayer = g_minimap.append('g')
+  .classed('map-layer', true);
+
+// Load map data
+d3.json('data/communes_94.geo.json', function(error, data_94) {
+
+mapData = data_94;
+
+  var features = mapData.features;
+
+  console.log(features);
+
+
+  // Draw each city as a path
+  mapLayer.selectAll('path')
+      .data(features)
+    .enter().append('path')
+      .attr('d', path)
+      .attr('vector-effect', 'non-scaling-stroke')
+      .style('fill', color_cities)
+      .on('mouseover', mouseover)
+      .on('mouseout', mouseout)
+      .on('click', clicked);
+});
+
+var title_city_text = svg_minimap
+.append('text')
+.attr('x', (width_minimap/2))
+.attr('y', 15)
+.attr('text-anchor', 'middle');
+
+// Get city name
+function nameFn(d){
+  return d && d.properties ? d.properties.NOMBRE_DPT ? d.properties.NOMBRE_DPT : d.properties.nom : null;
+}
+
+
+// When clicked, action
+function clicked(d) {
+
+console.log(d);
+
+console.log(d.properties.nom);
+
+console.log(cities_files_2[d.properties.nom]);
+
+// cities_files_2
+
+var this_file = cities_files_2[d.properties.nom];
+
+if (this_file != 0){
+queue()
+.defer(d3.csv, 'data/geocode/' + this_file)
+.await(makeMap);
+
+}
+
+
+
+}
+
+function mouseover(d){
+  // Highlight hovered city
+  d3.select(this).style('fill', 'orange');
+
+  // Draw text
+  textChange(nameFn(d));
+}
+
+function mouseout(d){
+  // Reset city color
+  mapLayer.selectAll('path')
+    .style('fill', function(d){return centered && d===centered ? '#D5708B' : color_cities;});
+
+  // Remove effect text
+  effectLayer.selectAll('text').transition()
+    .style('opacity', 0)
+    .remove();
+
+  // Clear city name
+  title_city_text.text('');
+}
+
+
+
+function textChange(text){
+
+
+  title_city_text
+  .text(text);
+
+}
+
+
+
+function makeMap(error, data) {
+
+
+data = data.filter(function(d){ return _.isUndefined(d.latitude) == false});
+
+    console.log(data);
+
+data.forEach(function(d){
+
+    d.latitude = + d.latitude;
+    d.longitude = + d.longitude;
+    d.bureau = String(d.bureau);
+    d.bureau_num = + d.bureau;
+
+
+})
+
+var mean_lat = d3.mean(data, function(d){return d.latitude});
+var mean_long = d3.mean(data, function(d){return d.longitude});
+var extent_lat = d3.extent(data, function(d){return d.latitude});
+var extent_long = d3.extent(data, function(d){return d.longitude});
+var extent_bureau = d3.extent(data, function(d){return d.bureau_num});
+
+color_tone.domain(extent_bureau);
+
+// console.log(extent_bureau);
+            
+
+            var southWest = L.latLng((extent_lat[0] - 0.2), (extent_long[0] - 0.2));
+            var northEast = L.latLng((extent_lat[1] + 0.2), (extent_long[1] + 0.2));
+            var bounds = L.latLngBounds(southWest, northEast);
+
+
+            if (_.isUndefined(map) == false){
+
+            // map.off();
+            // map.remove();
+
+            markerGroup.clearLayers();
+
+
+            map.panTo([mean_lat,mean_long]);
+
+
+
+            }
+            else
+            {
+
+
+
+
+            map = new L.map('map', {
+                                           center:[mean_lat,mean_long],
+                                           zoom: 15,
+                                           // maxBounds: bounds,
+                                           layers: []
+                                         });
+
+            var tile_layer = L.tileLayer(
+                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    maxZoom: 18,
+                    minZoom: 1,
+                    attribution: 'Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                    detectRetina: false
+                    }
+                ).addTo(map);
+
+            markerGroup = L.layerGroup().addTo(map);
+
+            }
+        
+
+        
+            
+
+
+        
+        for (i in data){
+            // var color = color_dict[data[i].bureau];
+            var color = color_tone(data[i].bureau_num);
+
+
+
+            
+
+  var circle_marker = L.circle(
+                [data[i].latitude,data[i].longitude],
+                5,
+                {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.7
+                    }
+                )
+                .addTo(markerGroup)
+                .bindPopup("Bureau n°: <strong>"+ data[i].bureau + "</strong><br />"+
+                    "Adresse : "+ data[i].adresse +" <br />" +
+                    "scoring geolocalidation : <strong>"+ data[i].result_score +"</strong> <br />");
+            
+        }
+
+
+// var popup = L.popup();
+
+//     function onMapClick(e) {
+//         popup
+//             .setLatLng(e.latlng)
+//             .setContent("You clicked the map at " + e.latlng.toString())
+//             .openOn(map);
+//     }
+
+
+    }
+        
+$(function() {
+// Click on the form submit button to fire request
+$('#city_dep').change(function() {
+// var keywords = $('#mykeywords').val();
+var this_city = $('#city_dep').val();
+
+console.log(this_city);
+
+if (this_city != 0){
+queue()
+.defer(d3.csv, 'data/geocode/' + this_city)
+.await(makeMap);
+
+}
+ 
+
+           
+});
+});
+
+
+
+        </script>
