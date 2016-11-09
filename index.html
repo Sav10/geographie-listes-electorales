@@ -80,6 +80,21 @@
       flex-shrink:1;
     }
 
+    #loading_grid{
+z-index: 1000;
+position: relative;
+display: none;
+    }
+
+    #loading_sign{
+width: 50px;
+height: 50px;
+    }
+
+#left_pannel p{
+  margin:3px;
+}
+
   </style>
 </head>
 <body>
@@ -98,7 +113,7 @@
     </header>
     <div id="left_pannel" class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
       <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-        <div>Sélectionner une ville sur la minicarte ou dans la liste</div>
+        <p>Sélectionner une ville sur la minicarte ou dans la liste</p>
 
         <svg id="minimap"  fill="currentColor" class="demo-chart">
         </svg>
@@ -129,9 +144,19 @@
 
               </div>
               <div class="mdl-card__supporting-text">
-                Une localisation de toutes les listes dans la ville électorales sera générée.
+                Toutes les adresses disponibles seront géolocalisées et placées sur la carte.
               </div>
             </div>
+            <!-- <div id ="loading_sign" ><div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner mdl-spinner--middle is-active"></div></div> -->
+            <div class="mdl-grid" id="loading_grid">
+ <div class="mdl-layout-spacer"></div>
+   <div class="mdl-cell mdl-cell--1-col">
+<div id ="loading_sign" class="mdl-spinner mdl-spinner--single-color mdl-js-spinner mdl-spinner--middle is-active"></div>
+</div>
+   <div class="mdl-layout-spacer"></div>
+</div>
+
+
 
           </div>
 
@@ -315,19 +340,24 @@ function clicked(d) {
 
   var this_file = cities_map_files[d.properties.nom];
 
+
+
   if (this_file != 0){
+
+if (is_small_screen == true){
+d3.select('#left_pannel').classed('is-visible', false)
+    .attr('aria-hidden', 'true');
+d3.select('.mdl-layout__obfuscator').classed('is-visible', false);
+}
+
+      d3.select("#loading_grid").style('display', 'flex');
+
     queue()
     .defer(d3.csv, 'data/geocode/' + this_file)
     .await(makeMap);
   }
 
-  // <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50 is-visible" aria-hidden="false">
-if (is_small_screen == true){
-d3.select('#left_pannel').classed('is-visible', false)
-    .attr('aria-hidden', 'true');
 
-d3.select('.mdl-layout__obfuscator').classed('is-visible', false);
-}
 
 }
 
@@ -467,6 +497,7 @@ function makeMap(error, data) {
 
             map.panTo([mean_lat,mean_long]);
           }
+          d3.select("#loading_grid").style('display', 'none');
 
 
         }
@@ -536,6 +567,13 @@ if (this_city != 0){
 
   city_name
   .text("de " + cities_map_files_inverted[this_city]) + ' (94)';
+  if (is_small_screen == true){
+d3.select('#left_pannel').classed('is-visible', false)
+    .attr('aria-hidden', 'true');
+d3.select('.mdl-layout__obfuscator').classed('is-visible', false);
+}
+
+  d3.select("#loading_grid").style('display', 'flex');
 
 }
 });
