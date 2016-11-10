@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <title>Explorer les listes électorales du 94</title>
+  <title>Explorer le cadastre électoral du 94</title>
 
   <!-- Add to homescreen for Chrome on Android -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -95,6 +95,11 @@
       margin:3px;
     }
 
+    #header_left a{
+      padding: 0 5px 15px 15px;
+
+    }
+
   </style>
 </head>
 <body>
@@ -107,12 +112,15 @@
           <i class="material-icons">more_vert</i>
         </button>
         <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
-          <li class="mdl-menu__item">A propos</li>
+          <li class="mdl-menu__item"><a class="mdl-navigation__link" href="#a_propos">A propos</a></li>
         </ul>
       </div>
     </header>
     <div id="left_pannel" class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
       <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+        <header id="header_left"  class="mdl-color--blue-grey-900">
+          <a class="mdl-navigation__link" href="http://www.dataplazza.com">Revenir au site Dataplazza</a>
+        </header>
         <p>Sélectionner une ville sur la minicarte ou dans la liste</p>
 
         <svg id="minimap"  fill="currentColor" class="demo-chart">
@@ -144,7 +152,8 @@
 
               </div>
               <div class="mdl-card__supporting-text">
-                Toutes les adresses disponibles seront géolocalisées et placées sur la carte.
+                Toutes les adresses préalablement géocodées par Etalab ont été géolocalisées et placées sur la carte.
+                Les couleurs sont définies en fonction du bureau de vote associé à l'adresse.
               </div>
             </div>
             <div class="mdl-grid" id="loading_grid">
@@ -154,11 +163,24 @@
             </div>
             <div class="mdl-layout-spacer"></div>
           </div>
-
-
-
         </div>
+      </div>
+      <div id="a_propos" class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="mdl-card" id="text_map_space">
+          <div class="mdl-card__title">
+            <h2 class="mdl-card__title-text">A propos</h2>
+          </div>
+          <div class="mdl-card__media">
 
+          </div>
+          <div class="mdl-card__supporting-text">
+            La présente application a été construite à partir de listes électorales anonymisées et géocodées par <a href="https://www.etalab.gouv.fr/"> Etalab</a> à l'aide de la Base adresse nationale au cours du datacamp #CadElect.
+            <br />Plus de détails <a href="https://www.etalab.gouv.fr/datacamp-cadelect">ici</a>.
+          </div>
+          <div class="mdl-card__supporting-text">
+            Auteur : Savinien de Rivet - <a href="http://www.dataplazza.com">Dataplazza</a>
+          </div>
+        </div>
 
       </div>
     </div>
