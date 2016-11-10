@@ -1,0 +1,518 @@
+<!doctype html>
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Material Design Lite</title>
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="images/android-desktop.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+    <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
+
+    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <link rel="shortcut icon" href="images/favicon.png">
+
+    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
+    <!--
+    <link rel="canonical" href="http://www.example.com/">
+    -->
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.cyan-light_blue.min.css">
+    <link rel="stylesheet" href="css/mdl-selectfield.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/leaflet_1.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+  <link rel="stylesheet" href="https://raw.githubusercontent.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css" />
+
+
+
+    <style>
+    .background {
+      fill: #eee;
+      pointer-events: all;
+    }
+    .map-layer {
+      fill: #fff;
+      stroke: #aaa;
+    }
+
+    #map{
+      height: 800px;
+      width: 1200px;
+    }
+
+       #map{
+    top:  0px;
+    margin:0;
+    padding:0;
+  }
+
+.mdl-layout--fixed-drawer>.mdl-layout__content {
+    margin-left: 0px;
+
+  }
+#navigation_form option{
+  color: #333;
+}
+
+#navigation_form label{
+  color: #eee;
+}
+.mdl-selectfield__select, .mdl-selectfield{
+  width: 100%;
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+      <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+        <div class="mdl-layout__header-row">
+          <span class="mdl-layout-title">Listes électorales du Val de Marne <span id="city_name"></span></span>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
+            <i class="material-icons">more_vert</i>
+          </button>
+          <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
+            <li class="mdl-menu__item">A propos</li>
+          </ul>
+        </div>
+      </header>
+      <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
+        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+            <div>Sélectionner une ville sur la minicarte ou dans la liste</div>
+        <!--           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Home</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">inbox</i>Inbox</a> -->
+
+         <svg id="minimap"  fill="currentColor" class="demo-chart">
+            </svg>
+
+          <div class="demo-avatar-dropdown">
+            <!-- <span>Sélectionner une ville</span> -->
+            <div class="mdl-layout-spacer"></div>
+<!--             <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
+              <li class="mdl-menu__item">hello@example.com</li>
+              <li class="mdl-menu__item">info@example.com</li>
+            </ul> -->
+    <form id="navigation_form">
+
+      <div class="mdl-selectfield mdl-js-selectfield">
+        <select class="mdl-selectfield__select" id="city_dep" name="city_dep">
+        </select>
+        <label class="mdl-selectfield__label" for="city_dep">Sélectionner une ville</label>
+        <!-- <div class="mdl-selectfield__icon"><i class="material-icons">arrow_drop_down</i></div> -->
+      </div>
+    </form>
+<!--             <select class="form-control" id="city_dep">
+          </select> -->
+          </div>
+        </nav>
+      </div>
+      <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-grid demo-content">
+          <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+              <div id="map"><h2>SELECTIONNER UNE VILLE</h2></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="https://code.getmdl.io/1.2.1/material.min.js"></script>
+    <script src="js/mdl-selectfield.min.js"></script>
+  <script src="js/leaflet_1.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="js/d3.v4.min.js" charset="utf-8"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+  <script src="js/lodash.js"></script>
+  </body>
+  <script type="text/javascript">
+
+     var data,
+      map;
+
+      var cities_files = {'Sélectionner une ville':0,
+      'ABLON': 'ABLON-xls-geo.csv',
+      'ALFORTVILLE': 'ALFORTVILLE-xls-geo.csv',
+      'ARCUEIL': 'ARCUEIL-xls-geo.csv',
+      'BONNEUIL': 'BONNEUIL-ok-geo.csv',
+      'BRY SUR MARNE': 'BRY SUR MARNE-ok-geo.csv',
+      'Boissy': 'Boissy-xml-geo.csv',
+      'CHAMPIGNY': 'CHAMPIGNY-ok-geo.csv',
+      'CHARENTON': 'CHARENTON-ok-geo.csv',
+      'CHEVILLY LARUE': 'CHEVILLY LARUE-ok-geo.csv',
+      'CHOISY': 'CHOISY-ok-geo.csv',
+      'Cachan': 'Cachan-xml-geo.csv',
+      'Chennevieres': 'Chennevieres-xml-geo.csv',
+      'Creteil': 'Creteil-xml-geo.csv',
+      'FONTENAY': 'FONTENAY-ok-geo.csv',
+      'FRESNES': 'FRESNES-ok-geo.csv',
+      'GENTILLY': 'GENTILLY-ok-geo.csv',
+      'IVRY': 'IVRY-ok-geo.csv',
+      'Joinville': 'Joinville-xml-geo.csv',
+      'KREMLIN BICETRE': 'KREMLIN BICETRE-ok-geo.csv',
+      "L'HAY LES ROSES": "L'HAY LES ROSES-ok-geo.csv",
+      'LE PERREUX': 'LE PERREUX-ok-geo.csv',
+      'LIMEIL': 'LIMEIL-xls-geo.csv',
+      'MAISONS-ALFORT': 'MAISONS-ALFORT-ok-geo.csv',
+      'MANDRES': 'MANDRES-xls-geo.csv',
+      'Marolles': 'Marolles-xml-geo.csv',
+      'NOGENT': 'NOGENT-xls-geo.csv',
+      'NOISEAU': 'NOISEAU-ok-geo.csv',
+      'ORMESSON': 'ORMESSON-xls-geo.csv',
+      'Orly': 'Orly-xml-geo.csv',
+      'PERIGNY': 'PERIGNY-xls-geo.csv',
+      'Plessis-trevise': 'Plessis-trevise-xml-geo.csv',
+      'QUEUE EN BRIE (LA)': 'QUEUE EN BRIE (LA)-xls-geo.csv',
+      'RUNGIS': 'RUNGIS-ok-geo.csv',
+      'SAINT MANDE': 'SAINT MANDE-ok-geo.csv',
+      'SANTENY': 'SANTENY-xls-geo.csv',
+      'ST MAUR DES FOSSES': 'ST MAUR DES FOSSES-xls-geo.csv',
+      'ST MAURICE': 'ST MAURICE-xls-geo.csv',
+      'SUCY': 'SUCY-xls-geo.csv',
+      'THIAIS': 'THIAIS-xls-geo.csv',
+      'VALENTON': 'VALENTON-ok-geo.csv',
+      'VILLEJUIF': 'VILLEJUIF-ok-geo.csv',
+      'VILLENEUVE LE ROI': 'VILLENEUVE LE ROI-ok-geo.csv',
+      'VILLENEUVE ST GEORGES': 'VILLENEUVE ST GEORGES-ok-geo.csv',
+      'VILLIERS': 'VILLIERS-xls-geo.csv',
+      'VINCENNES': 'VINCENNES-ok-geo.csv',
+      'VITRY': 'VITRY-ok-geo.csv',
+      'Villecresnes': 'Villecresnes-xml-geo.csv'};
+
+      var cities_map_files = 
+      {"Ablon-sur-Seine":"ABLON-xls-geo.csv","Alfortville":"ALFORTVILLE-xls-geo.csv","Arcueil":"ARCUEIL-xls-geo.csv","Boissy-Saint-L\u00e9ger":"Boissy-xml-geo.csv","Bonneuil-sur-Marne":"BONNEUIL-ok-geo.csv","Bry-sur-Marne":"BRY SUR MARNE-ok-geo.csv","Cachan":"Cachan-xml-geo.csv","Champigny-sur-Marne":"CHAMPIGNY-ok-geo.csv","Charenton-le-Pont":"CHARENTON-ok-geo.csv","Chennevi\u00e8res-sur-Marne":"Chennevieres-xml-geo.csv","Chevilly-Larue":"CHEVILLY LARUE-ok-geo.csv","Choisy-le-Roi":"CHOISY-ok-geo.csv","Cr\u00e9teil":"Creteil-xml-geo.csv","Fontenay-sous-Bois":"FONTENAY-ok-geo.csv","Fresnes":"FRESNES-ok-geo.csv","Gentilly":"GENTILLY-ok-geo.csv","Ivry-sur-Seine":"IVRY-ok-geo.csv","Joinville-le-Pont":"Joinville-xml-geo.csv","L'Ha\u00ff-les-Roses":"L'HAY LES ROSES-ok-geo.csv","La Queue-en-Brie":"QUEUE EN BRIE (LA)-xls-geo.csv","Le Kremlin-Bic\u00eatre":"KREMLIN BICETRE-ok-geo.csv","Le Perreux-sur-Marne":"LE PERREUX-ok-geo.csv","Le Plessis-Tr\u00e9vise":"Plessis-trevise-xml-geo.csv","Limeil-Br\u00e9vannes":"LIMEIL-xls-geo.csv","Maisons-Alfort":"MAISONS-ALFORT-ok-geo.csv","Mandres-les-Roses":"MANDRES-xls-geo.csv","Marolles-en-Brie":"Marolles-xml-geo.csv","Nogent-sur-Marne":"NOGENT-xls-geo.csv","Noiseau":"NOISEAU-ok-geo.csv","Orly":"Orly-xml-geo.csv","Ormesson-sur-Marne":"ORMESSON-xls-geo.csv","P\u00e9rigny":"PERIGNY-xls-geo.csv","Rungis":"RUNGIS-ok-geo.csv","Saint-Mand\u00e9":"SAINT MANDE-ok-geo.csv","Saint-Maur-des-Foss\u00e9s":"ST MAUR DES FOSSES-xls-geo.csv","Saint-Maurice":"ST MAURICE-xls-geo.csv","Santeny":"SANTENY-xls-geo.csv","Sucy-en-Brie":"SUCY-xls-geo.csv","Thiais":"THIAIS-xls-geo.csv","Valenton":"VALENTON-ok-geo.csv","Villecresnes":"Villecresnes-xml-geo.csv","Villejuif":"VILLEJUIF-ok-geo.csv","Villeneuve-le-Roi":"VILLENEUVE LE ROI-ok-geo.csv","Villeneuve-Saint-Georges":"VILLENEUVE ST GEORGES-ok-geo.csv","Villiers-sur-Marne":"VILLIERS-xls-geo.csv","Vincennes":"VINCENNES-ok-geo.csv","Vitry-sur-Seine":"VITRY-ok-geo.csv"};
+
+// Main map parameters
+
+ // var color_tone = d3.scaleSequential(d3.interpolateSpectral);
+
+ var map_width = 1000,
+ map_height = 800;
+
+ var color_tone = d3.scaleOrdinal(d3.schemePaired);
+ var markerGroup;
+ var all_cities_entries = d3.entries(cities_files);
+// <li class="mdl-menu__item">info@example.com</li>
+ var selectCity = d3.select('#city_dep');
+
+ selectCity.selectAll('option')
+ .data(all_cities_entries)
+ .enter()
+ .append('option')
+ .attr('value', function(d){ return d.value})
+ .text(function(d){ return d.key});
+
+var cities_map_files_inverted = _.invert(cities_map_files);
+
+
+/// Set up the minimap
+
+var width_minimap = 200,
+height_minimap = 200,
+centered,
+clickedElement;
+
+var city_name = d3.select("#city_name");
+
+var color_cities = 'rgb(183, 217, 217)';
+
+var projection = d3.geoMercator()
+.scale(30000)
+.center([ 2.49, 48.78])
+.translate([width_minimap / 2, height_minimap / 2]);
+
+var path = d3.geoPath()
+.projection(projection);
+
+
+// Set svg width & height
+var svg_minimap = d3.select('svg#minimap')
+.attr('width', width_minimap)
+.attr('height', height_minimap)
+.call(responsivefy)
+// .attr('viewBox', '0 0 ${width_minimap} ${height_minimap}')
+;
+
+
+var g_minimap = svg_minimap.append('g');
+
+var effectLayer = g_minimap.append('g')
+.classed('effect-layer', true);
+
+var mapLayer = g_minimap.append('g')
+.classed('map-layer', true);
+
+// Load map data
+d3.json('data/communes_94.geo.json', function(error, data_94) {
+
+  mapData = data_94;
+
+  var features = mapData.features;
+
+  // Draw each city as a path
+  mapLayer.selectAll('path')
+  .data(features)
+  .enter().append('path')
+  .attr('d', path)
+  .attr('vector-effect', 'non-scaling-stroke')
+  .style('fill', color_cities)
+  .on('mouseover', mouseover)
+  .on('mouseout', mouseout)
+  .on('click', clicked);
+});
+
+var title_city_text = svg_minimap
+.append('text')
+.attr('x', (width_minimap/2))
+.attr('y', 15)
+.attr('text-anchor', 'middle');
+
+// Get city name
+function nameFn(d){
+  return d && d.properties ? d.properties.NOMBRE_DPT ? d.properties.NOMBRE_DPT : d.properties.nom : null;
+}
+
+// When clicked, action
+function clicked(d) {
+  clickedElement = d;
+
+  d3.select(this).style('fill', 'orange');
+  textChange(nameFn(d));
+
+    city_name
+  .text("dans la ville de " + nameFn(d));
+
+  var this_file = cities_map_files[d.properties.nom];
+
+  if (this_file != 0){
+    queue()
+    .defer(d3.csv, 'data/geocode/' + this_file)
+    .await(makeMap);
+
+  }
+
+}
+
+function mouseover(d){
+  // Highlight hovered city
+  d3.select(this).style('fill', 'orange');
+
+  // Draw text
+  textChange(nameFn(d));
+}
+
+function mouseout(d){
+
+   // Reset city color
+  mapLayer.selectAll('path')
+  .style('fill', function(d){return centered && d===centered ? '#D5708B' : color_cities;});
+
+  // Remove effect text
+  effectLayer.selectAll('text').transition()
+  .style('opacity', 0)
+  .remove();
+
+  // Clear city name
+  title_city_text.text('');
+
+if (clickedElement){
+  textChange(nameFn(clickedElement));
+}
+
+}
+
+
+function textChange(text){
+
+  title_city_text
+  .text(text);
+
+
+}    
+
+// End of the Minimap
+
+
+/// Set up the Main Map
+function makeMap(error, data) {
+
+  d3.select('#map h2')
+  .style('display', 'none');
+
+  data = data.filter(function(d){ return _.isUndefined(d.latitude) == false});
+
+  data.forEach(function(d){
+
+    d.latitude = + d.latitude;
+    d.longitude = + d.longitude;
+    d.bureau = String(d.bureau);
+    d.bureau_num = + d.bureau;
+
+  })
+
+
+  var extent_lat = d3.extent(data, function(d){return d.latitude});
+  var extent_long = d3.extent(data, function(d){return d.longitude});
+  var extent_bureau = d3.extent(data, function(d){return d.bureau_num});
+  var mean_lat = (extent_lat[0] + (extent_lat[1] - extent_lat[0])/2);
+  var mean_long = (extent_long[0] + (extent_long[1] - extent_long[0])/2);
+
+  color_tone.domain(extent_bureau);
+
+  var southWest = L.latLng((extent_lat[0] - 0.2), (extent_long[0] - 0.2));
+  var northEast = L.latLng((extent_lat[1] + 0.2), (extent_long[1] + 0.2));
+  var bounds = L.latLngBounds(southWest, northEast);
+
+  if (_.isUndefined(map) == false){
+
+            // map.off();
+            // map.remove();
+
+            markerGroup.clearLayers();
+
+          }
+          else
+          {
+
+            map = new L.map('map', {
+             center:[mean_lat,mean_long],
+             zoom: 15,
+                                           // maxBounds: bounds,
+                                           layers: []
+                                         });
+
+            var tile_layer = L.tileLayer(
+              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              {
+                maxZoom: 18,
+                minZoom: 1,
+                attribution: 'Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                detectRetina: false
+              }
+              ).addTo(map);
+
+            markerGroup = L.layerGroup().addTo(map);
+
+            // map.invalidateSize();
+
+            // var container = d3.select(map.node().parentNode),
+            // width = parseInt(map.style('width')),
+            // height = parseInt(map.style("height")),
+            // aspect = width / height;
+
+            // map.attr("width", width);
+            // svg.attr("height", Math.round(width / aspect));
+
+
+
+          }
+
+
+          for (i in data){
+
+            var color = color_tone(data[i].bureau_num);
+
+            var circle_marker = L.circle(
+              [data[i].latitude,data[i].longitude],
+              5,
+              {
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.7
+              }
+              )
+            .addTo(markerGroup)
+            .bindPopup("Bureau n°: <strong>"+ data[i].bureau + "</strong><br />"+
+              "Adresse : "+ data[i].adresse +" <br />" +
+              "Fiabilité de la geolocalidation : <strong>"+ data[i].result_score +"</strong> <br />");
+            
+          }
+
+  if (_.isUndefined(map) == false){
+
+            map.panTo([mean_lat,mean_long]);
+          }
+
+
+        }
+
+function responsivefy(svg){
+
+// get container + svg aspect ratio
+var container = d3.select(svg.node().parentNode),
+width = parseInt(svg.style('width')),
+height = parseInt(svg.style("height")),
+aspect = width / height;
+
+
+// add viewBox and preserve aspectratio properties
+// call resize so that svg resizes on initial page load
+svg.attr("viewBox", "0 0 " + width + " " + height)
+.attr("preserveAspectRatio", "xMinYMid")
+.call(resize);
+
+// to register multiple listeners for the same event type
+d3.select(window).on("resize." + container.attr("id"), resize);
+
+function resize() {
+
+  var targetWidth = parseInt(container.style("width"));
+
+  svg.attr("width", targetWidth);
+  svg.attr("height", Math.round(targetWidth / aspect));
+}
+}
+
+        $(function() {
+// Click on the form submit button to fire request
+$('#city_dep').change(function() {
+// var keywords = $('#mykeywords').val();
+var this_city = $('#city_dep').val();
+
+console.log(this_city);
+
+if (this_city != 0){
+  queue()
+  .defer(d3.csv, 'data/geocode/' + this_city)
+  .await(makeMap);
+
+
+textChange(cities_map_files_inverted[this_city]);
+
+    city_name
+  .text("dans la ville de " + cities_map_files_inverted[this_city]);
+
+}
+});
+});
+  </script>
+</html>
