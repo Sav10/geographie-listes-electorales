@@ -57,10 +57,6 @@
       padding:0;
     }
 
-    .mdl-layout--fixed-drawer>.mdl-layout__content {
-      margin-left: 0px;
-
-    }
     #navigation_form option{
       color: #333;
     }
@@ -99,6 +95,16 @@
       padding: 0 5px 15px 15px;
 
     }
+@media (min-width: 1570px){
+
+
+      .mdl-layout--fixed-drawer>.mdl-layout__content {
+      margin-left: 0px;
+
+    }
+
+}
+
 
   </style>
 </head>
@@ -106,7 +112,7 @@
   <div id="container_in" class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
     <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
       <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">Géographie des listes électorales <span id="city_name">du Val de Marne </span></span>
+        <span class="mdl-layout-title">Géographie des listes électorales du Val de Marne à <span id="city_name">du Val de Marne </span></span>
         <div class="mdl-layout-spacer"></div>
         <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
           <i class="material-icons">more_vert</i>
@@ -143,7 +149,9 @@
       <div class="mdl-grid demo-content">
         <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
           <div id="map">
-            <!-- <h3>Sélectionner une ville dans le menu de gauche</h3> -->
+            <h4>Comment se répartissent les bureaux de vote dans votre commune</h4>
+            <div id="minimap_cloned" class="demo-chart  mdl-cell--11-col mdl-cell--8-col-desktop">
+            </div>
             <div class="mdl-card" id="text_map_space">
               <div class="mdl-card__title">
                 <h2 class="mdl-card__title-text">Sélectionner une ville dans le menu de gauche</h2>
@@ -152,7 +160,7 @@
 
               </div>
               <div class="mdl-card__supporting-text">
-                Toutes les adresses préalablement géocodées par Etalab ont été géolocalisées et placées sur la carte.
+              Toutes les adresses préalablement géocodées par Etalab ont été placées sur la carte.
                 Les couleurs sont définies en fonction du bureau de vote associé à l'adresse.
               </div>
             </div>
@@ -192,6 +200,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="js/d3.v4.min.js" charset="utf-8"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
 <script src="js/lodash.js"></script>
 </body>
@@ -319,6 +328,13 @@ var effectLayer = g_minimap.append('g')
 var mapLayer = g_minimap.append('g')
 .classed('map-layer', true);
 
+
+
+var minimap_cloned = d3.select("#minimap_cloned");
+
+
+
+
 // Load map data
 d3.json('data/communes_94.geo.json', function(error, data_94) {
 
@@ -336,6 +352,29 @@ d3.json('data/communes_94.geo.json', function(error, data_94) {
   .on('mouseover', mouseover)
   .on('mouseout', mouseout)
   .on('click', clicked);
+
+svg_minimap_node = svg_minimap.node();
+
+minimap_cloned
+.append(function() { return svg_minimap_node.cloneNode(true); });
+
+minimap_cloned
+.select('#minimap')
+.attrs({
+  id:'',
+  class: 'minimap_cloned'
+  ,
+  width: '200px',
+  height: '200px'
+})
+.call(responsivefy)
+.select('g.map-layer')
+.selectAll('path')
+.data(features)
+.on('mouseover', mouseover)
+.on('mouseout', mouseout)
+.on('click', clicked);
+
 });
 
 var title_city_text = svg_minimap
@@ -343,6 +382,7 @@ var title_city_text = svg_minimap
 .attr('x', (width_minimap/2))
 .attr('y', 15)
 .attr('text-anchor', 'middle');
+
 
 // Get city name
 function nameFn(d){
@@ -388,12 +428,18 @@ function mouseover(d){
 
   // Draw text
   textChange(nameFn(d));
+
+    d3.select("svg.minimap_cloned").select('text')
+  .text(nameFn(d));
 }
 
 function mouseout(d){
 
    // Reset city color
    mapLayer.selectAll('path')
+   .style('fill', function(d){return centered && d===centered ? '#D5708B' : color_cities;});
+
+      minimap_cloned.select('.map-layer').selectAll('path')
    .style('fill', function(d){return centered && d===centered ? '#D5708B' : color_cities;});
 
   // Remove effect text
@@ -469,6 +515,7 @@ function makeMap(error, data) {
           }
           else
           {
+            minimap_cloned.remove();
 
             map = new L.map('map', {
              center:[mean_lat,mean_long],
@@ -545,6 +592,7 @@ d3.select(window).on("resize." + container.attr("id"), resize);
 
 
 d3.select(window).on("resize", function(){
+
 
   if (_.isUndefined(map) == false){
     if (window.innerWidth < 768)
