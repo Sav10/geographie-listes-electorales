@@ -47,7 +47,7 @@
     }
 
     #map{
-      height: 800px;
+      /*height: 800px;*/
       width: 1200px;
     }
 
@@ -112,7 +112,7 @@
   <div id="container_in" class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
     <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
       <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">Géographie des listes électorales du Val de Marne à <span id="city_name">du Val de Marne </span></span>
+        <span class="mdl-layout-title">Géographie des listes électorales <span id="city_name">du Val de Marne </span></span>
         <div class="mdl-layout-spacer"></div>
         <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
           <i class="material-icons">more_vert</i>
@@ -148,11 +148,11 @@
     <main class="mdl-layout__content mdl-color--grey-100">
       <div class="mdl-grid demo-content">
         <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-          <div id="map">
+          <div class="mdl-grid" id="map">
             <h4>Comment se répartissent les bureaux de vote dans votre commune</h4>
-            <div id="minimap_cloned" class="demo-chart  mdl-cell--11-col mdl-cell--8-col-desktop">
+            <div id="minimap_cloned" class="demo-chart  mdl-cell--6-col">
             </div>
-            <div class="mdl-card" id="text_map_space">
+            <div class="mdl-card mdl-card--6-col" id="text_map_space">
               <div class="mdl-card__title">
                 <h2 class="mdl-card__title-text">Sélectionner une ville dans le menu de gauche</h2>
               </div>
@@ -516,6 +516,8 @@ function makeMap(error, data) {
           else
           {
             minimap_cloned.remove();
+            d3.select("#map").select('h4').remove();
+            d3.select("#map").style('height', '800px');
 
             map = new L.map('map', {
              center:[mean_lat,mean_long],
@@ -614,8 +616,10 @@ function resize() {
 
   var targetWidth = parseInt(container.style("width"));
 
+  if (_.isNaN(targetWidth) == false){
   svg.attr("width", targetWidth);
   svg.attr("height", Math.round(targetWidth / aspect));
+}
 }
 }
 
