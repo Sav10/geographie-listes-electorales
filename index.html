@@ -95,6 +95,11 @@
       padding: 0 5px 15px 15px;
 
     }
+
+#map .mdl-card h4{
+  font-size: 18px;
+}
+
 @media (min-width: 1570px){
 
 
@@ -109,10 +114,10 @@
   </style>
 </head>
 <body>
-  <div id="container_in" class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-    <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+  <div id="container_in" class="dashboard-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+    <header class="dashboard-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
       <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">Géographie des listes électorales <span id="city_name">du Val de Marne </span></span>
+        <span class="mdl-layout-title">Explorer le cadastre électoral <span id="city_name">du Val de Marne </span></span>
         <div class="mdl-layout-spacer"></div>
         <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
           <i class="material-icons">more_vert</i>
@@ -122,17 +127,18 @@
         </ul>
       </div>
     </header>
-    <div id="left_pannel" class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
-      <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+    <div id="left_pannel" class="dashboard-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
+      <nav class="dashboard-navigation mdl-navigation mdl-color--blue-grey-800">
         <header id="header_left"  class="mdl-color--blue-grey-900">
           <a class="mdl-navigation__link" href="http://www.dataplazza.com">Revenir au site Dataplazza</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Home</a>
         </header>
         <p>Sélectionner une ville sur la minicarte ou dans la liste</p>
 
-        <svg id="minimap"  fill="currentColor" class="demo-chart">
+        <svg id="minimap"  fill="currentColor" class="dashboard-chart">
         </svg>
 
-        <div class="demo-avatar-dropdown">
+        <div class="dashboard-avatar-dropdown">
           <div class="mdl-layout-spacer"></div>
           <form id="navigation_form">
 
@@ -146,22 +152,22 @@
       </nav>
     </div>
     <main class="mdl-layout__content mdl-color--grey-100">
-      <div class="mdl-grid demo-content">
-        <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+      <div class="mdl-grid dashboard-content">
+        <div class="dashboard-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
           <div class="mdl-grid" id="map">
-            <h4>Comment se répartissent les bureaux de vote dans votre commune</h4>
-            <div id="minimap_cloned" class="demo-chart  mdl-cell--6-col">
+            <h4>Comment se répartissent les bureaux de vote dans votre commune ?</h4>
+            <div id="minimap_cloned" class="dashboard-chart  mdl-cell--6-col">
             </div>
             <div class="mdl-card mdl-card--6-col" id="text_map_space">
               <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">Sélectionner une ville dans le menu de gauche</h2>
+                <h4 class="mdl-card__title-text">Sélectionner une ville sur la carte ou dans le menu gauche</h4>
               </div>
               <div class="mdl-card__media">
 
               </div>
               <div class="mdl-card__supporting-text">
-              Toutes les adresses préalablement géocodées par Etalab ont été placées sur la carte.
-                Les couleurs sont définies en fonction du bureau de vote associé à l'adresse.
+              La carte permet d'explorer la répoartion des listes électorales par adresse.
+              Les couleurs sont assignées en fonction des bureaux de vote.
               </div>
             </div>
             <div class="mdl-grid" id="loading_grid">
@@ -173,7 +179,7 @@
           </div>
         </div>
       </div>
-      <div id="a_propos" class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+      <div id="a_propos" class="dashboard-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
         <div class="mdl-card" id="text_map_space">
           <div class="mdl-card__title">
             <h2 class="mdl-card__title-text">A propos</h2>
@@ -355,6 +361,8 @@ d3.json('data/communes_94.geo.json', function(error, data_94) {
 
 svg_minimap_node = svg_minimap.node();
 
+// Clone the minimap for the front page and populate it with data
+
 minimap_cloned
 .append(function() { return svg_minimap_node.cloneNode(true); });
 
@@ -362,8 +370,7 @@ minimap_cloned
 .select('#minimap')
 .attrs({
   id:'',
-  class: 'minimap_cloned'
-  ,
+  class: 'minimap_cloned',
   width: '200px',
   height: '200px'
 })
@@ -374,8 +381,8 @@ minimap_cloned
 .on('mouseover', mouseover)
 .on('mouseout', mouseout)
 .on('click', clicked);
-
 });
+
 
 var title_city_text = svg_minimap
 .append('text')
@@ -507,8 +514,6 @@ function makeMap(error, data) {
 
   if (_.isUndefined(map) == false){
 
-            // map.off();
-            // map.remove();
 
             markerGroup.clearLayers();
 
@@ -626,7 +631,7 @@ function resize() {
 $(function() {
 // Click on the form submit button to fire request
 $('#city_dep').change(function() {
-// var keywords = $('#mykeywords').val();
+
 var this_city = $('#city_dep').val();
 
 
